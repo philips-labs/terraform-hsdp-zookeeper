@@ -22,7 +22,7 @@ blueprint for future HSDP Container Host modules. Consider it experimental / bro
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| bastion\_host | Bastion host ot use for connections | `string` | n/a | yes |
+| bastion\_host | Bastion host to use SSH for connections | `string` | n/a | yes |
 | image | The docker image to use | `string` | `"bitnami/zookeeper:latest"` | no |
 | instance\_type | The instance type to use | `string` | `"t2.medium"` | no |
 | nodes | Number of nodes | `number` | `3` | no |

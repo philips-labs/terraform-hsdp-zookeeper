@@ -34,7 +34,7 @@ variable "user" {
 }
 
 variable "bastion_host" {
-   description = "Bastion host ot use for connections"
+   description = "Bastion host to use for SSH connections"
    type = string
 }
 
