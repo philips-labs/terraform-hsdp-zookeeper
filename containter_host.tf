@@ -43,13 +43,14 @@ resource "null_resource" "cluster" {
   }
 
   provisioner "file" {
-    source = "scripts/bootstrap-cluster.sh"
-    destination = "/home/${var.user}"
+    source = "${path.module}/scripts/bootstrap-cluster.sh"
+    destination = "/home/${var.user}/bootstrap-cluster.sh"
   }
 
   provisioner "remote-exec" {
     # Bootstrap script called with private_ip of each node in the cluster
     inline = [
+       "chmod +x /home/${var.user}/bootstrap-cluster.sh",
        "/home/${var.user}/bootstrap-cluster.sh -n ${join(",", hsdp_container_host.zookeeper.*.private_ip)} -c ${random_id.id.hex} -d ${var.image} -i ${count.index+1}"
     ]
   }
