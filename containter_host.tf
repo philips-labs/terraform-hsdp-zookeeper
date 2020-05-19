@@ -31,7 +31,7 @@ resource "null_resource" "cluster" {
   count = var.nodes
 
   triggers = {
-    cluster_instance_ids = "${join(",", hsdp_container_host.zookeeper.*.id)}"
+    cluster_instance_ids = join(",", hsdp_container_host.zookeeper.*.id)
   }
 
   connection {
@@ -42,10 +42,21 @@ resource "null_resource" "cluster" {
     script_path  = "/home/${var.user}/cluster.bash"
   }
 
+  provisioner "file" {
+    source = "scripts/bootstrap-cluster.sh"
+    destination = "/home/${var.user}"
+  }
+
   provisioner "remote-exec" {
     # Bootstrap script called with private_ip of each node in the cluster
     inline = [
-      "echo bootstrap-cluster.sh ${join(" ", hsdp_container_host.zookeeper.*.private_ip)}",
+      join("",
+        "/home/${var.user}/bootstrap-cluster.sh",
+        " -n ${join(",", hsdp_container_host.zookeeper.*.private_ip)}",
+        " -c ${random_id.id.hex}",
+        " -d ${var.image}",
+        " -i ${count.index+1}"
+      )
     ]
   }
 }

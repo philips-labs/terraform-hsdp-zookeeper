@@ -1,6 +1,6 @@
 # HSDP Zookeeper module
 
-Module to crate an Apache Zookeeper ensemble cluster deployed
+Module to create an Apache Zookeeper ensemble cluster deployed
 on the HSDP Container Host infrastructure. This module serves as a 
 blueprint for future HSDP Container Host modules. Consider it experimental / broken as we refine the internals.
 
