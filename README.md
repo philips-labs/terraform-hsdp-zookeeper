@@ -2,7 +2,19 @@
 
 Module to create an Apache Zookeeper ensemble cluster deployed
 on the HSDP Container Host infrastructure. This module serves as a 
-blueprint for future HSDP Container Host modules. Consider it experimental / broken as we refine the internals.
+blueprint for future HSDP Container Host modules. Example usage
+
+```hcl
+module "zookeeper" {
+  source = "github.com/philips-labs/terraform-hsdp-zookeeper"
+
+  nodes        = 5
+  bastion_host = "bastion.host"
+  user         = "ronswanson"
+  private_key  = file("~/.ssh/dec.key")
+  user_groups  = ["ronswanson", "poc"]
+}
+```
 
 ## Requirements
 
