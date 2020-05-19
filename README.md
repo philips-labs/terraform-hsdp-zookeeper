@@ -1,3 +1,5 @@
+<img src="https://cdn.rawgit.com/hashicorp/terraform-website/master/content/source/assets/images/logo-hashicorp.svg" width="500px">
+
 # HSDP Zookeeper module
 
 Module to create an Apache Zookeeper ensemble cluster deployed
