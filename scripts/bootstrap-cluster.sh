@@ -47,6 +47,7 @@ start_zookeeper() {
   servers="$(zoo_servers "$index" "$nodes")"
   echo ZOO_SERVERS="$servers"
   docker run -d -v zookeeper:/bitnami/zookeeper \
+    --restart always \
     --name zookeeper \
     --env ZOO_SERVER_ID="$1" \
     --env ZOO_ENABLE_PROMETHEUS_METRICS=yes \
