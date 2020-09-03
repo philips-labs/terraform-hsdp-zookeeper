@@ -10,7 +10,7 @@ resource "hsdp_container_host" "zookeeper" {
   instance_type = var.instance_type
 
   user_groups     = var.user_groups
-  security_groups = ["analytics", "tcp-8080"]
+  security_groups = ["analytics"]
 
   connection {
     bastion_host = var.bastion_host
