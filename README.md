@@ -22,13 +22,13 @@ module "zookeeper" {
 
 | Name | Version |
 |------|---------|
-| terraform | >= 0.12 |
+| hsdp | >= 0.6.1 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| hsdp | n/a |
+| hsdp | >= 0.6.1 |
 | null | n/a |
 | random | n/a |
 
@@ -36,7 +36,7 @@ module "zookeeper" {
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| bastion\_host | Bastion host to use SSH for connections | `string` | n/a | yes |
+| bastion\_host | Bastion host to use for SSH connections | `string` | n/a | yes |
 | image | The docker image to use | `string` | `"bitnami/zookeeper:latest"` | no |
 | instance\_type | The instance type to use | `string` | `"t2.medium"` | no |
 | nodes | Number of nodes | `number` | `3` | no |
@@ -49,7 +49,8 @@ module "zookeeper" {
 
 | Name | Description |
 |------|-------------|
-| private\_ips | Private IP addresses of Zookeeper instances |
+| zookeeper\_nodes | Container Host Zookeeper instances |
+| zookeeper\_port | Zookeeper port |
 
 # Contact / Getting help
 
