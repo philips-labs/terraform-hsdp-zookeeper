@@ -29,16 +29,16 @@ variable "user_groups" {
 }
 
 variable "user" {
-   description = "LDAP user to use for connections"
-   type       = string
+  description = "LDAP user to use for connections"
+  type        = string
 }
 
 variable "bastion_host" {
-   description = "Bastion host to use for SSH connections"
-   type = string
+  description = "Bastion host to use for SSH connections"
+  type        = string
 }
 
 variable "private_key" {
-   description = "Private key for SSH access"
-   type = string
+  description = "Private key for SSH access"
+  type        = string
 }
