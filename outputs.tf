@@ -5,5 +5,5 @@ output "zookeeper_nodes" {
 
 output "zookeeper_port" {
   description = "Zookeeper port"
-  value       = "2181"
+  value       = "10000"
 }

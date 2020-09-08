@@ -51,11 +51,11 @@ start_zookeeper() {
     --name zookeeper \
     --env ZOO_SERVER_ID="$1" \
     --env ZOO_ENABLE_PROMETHEUS_METRICS=yes \
-    --env ZOO_PROMETHEUS_METRICS_PORT_NUMBER=18080 \
+    --env ZOO_PROMETHEUS_METRICS_PORT_NUMBER=10001 \
     --env ALLOW_ANONYMOUS_LOGIN=yes \
     --env ZOO_SERVERS="$servers"  \
-    -p 2181:2181 \
-    -p 18080:18080 \
+    -p 10000:2181 \
+    -p 10001:10001 \
     -p 6066:2888 \
     -p 7077:3888 \
     "$3"
