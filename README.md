@@ -49,6 +49,7 @@ module "zookeeper" {
 
 | Name | Description |
 |------|-------------|
+| zookeeper\_name\_nodes | Container Host Zookeeper instance names |
 | zookeeper\_nodes | Container Host Zookeeper instances |
 | zookeeper\_port | Zookeeper port |
 
