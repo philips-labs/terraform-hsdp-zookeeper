@@ -46,12 +46,21 @@ resource "null_resource" "cluster" {
     source      = "${path.module}/scripts/bootstrap-cluster.sh"
     destination = "/home/${var.user}/bootstrap-cluster.sh"
   }
+  provisioner "file" {
+    source      =  var.trust_store.keystore
+    destination = "/home/${var.user}/zookeeper.truststore.jks"
+  }
+
+  provisioner "file" {
+    source      = var.key_stores[count.index].keystore
+    destination = "/home/${var.user}/zookeeper.keystore.jks"
+  }
 
   provisioner "remote-exec" {
     # Bootstrap script called with private_ip of each node in the cluster
     inline = [
       "chmod +x /home/${var.user}/bootstrap-cluster.sh",
-      "/home/${var.user}/bootstrap-cluster.sh -n ${join(",", hsdp_container_host.zookeeper.*.private_ip)} -c ${random_id.id.hex} -d ${var.image} -i ${count.index + 1}"
+      "/home/${var.user}/bootstrap-cluster.sh -n ${join(",", hsdp_container_host.zookeeper.*.private_ip)} -c ${random_id.id.hex} -d ${var.image} -i ${count.index + 1} -t ${trust_store.password} -k ${key_stores[count.index].password}"
     ]
   }
 }

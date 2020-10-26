@@ -42,3 +42,19 @@ variable "private_key" {
   description = "Private key for SSH access"
   type        = string
 }
+
+variable "trust_store" {
+  description = "Trust store for SSL"
+  type        = object (
+    { keystore  = string ,
+      password  = string }
+  )
+}
+
+variable "key_stores" {
+  description = "A list of key stores one for each nore"
+  type        = list(object(
+    { keystore  = string ,
+      password  = string }
+  ) )
+}
