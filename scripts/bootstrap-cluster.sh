@@ -68,7 +68,7 @@ start_zookeeper() {
     --env ZOO_TLS_CLIENT_KEYSTORE_FILE="/opt/bitnami/kafka/conf/certs/zookeeper.keystore.jks" \
     --env ZOO_TLS_CLIENT_KEYSTORE_PASSWORD="$client_ks_pwd" \
     --env ZOO_TLS_CLIENT_TRUSTSTORE_FILE="/opt/bitnami/kafka/conf/certs/zookeeper.truststore.jks" \
-    --env ZOO_TLS_CLIENT_TRUSTSTORE_PASSWORD="$client_ts_pwd" \    
+    --env ZOO_TLS_CLIENT_TRUSTSTORE_PASSWORD="$client_ts_pwd" \
     -p 10000:3181 \
     -p 10001:10001 \
     -p 6066:2888 \
@@ -90,8 +90,8 @@ nodes=
 cluster=
 image=
 index=
-trust_store_pass=
-key_store_pass=
+trust_store_pwd=
+key_store_pwd=
 
 while [ "$1" != "" ]; do
     case $1 in
@@ -109,11 +109,9 @@ while [ "$1" != "" ]; do
                                       ;;
         -t | --trust-store-pwd )      shift
                                       trust_store_pwd=$1
-                                      exit
                                       ;;
         -k | --key-store-pwd )        shift
                                       key_store_pwd=$1
-                                      exit
                                       ;;
         -h | --help )                 usage
                                       exit
