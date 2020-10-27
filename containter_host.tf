@@ -47,12 +47,12 @@ resource "null_resource" "cluster" {
     destination = "/home/${var.user}/bootstrap-cluster.sh"
   }
   provisioner "file" {
-    source      =  var.trust_store.keystore
+    source      =  var.trust_store.truststore
     destination = "/home/${var.user}/zookeeper.truststore.jks"
   }
 
   provisioner "file" {
-    source      = var.key_stores[count.index].keystore
+    source      = var.key_store.keystore
     destination = "/home/${var.user}/zookeeper.keystore.jks"
   }
 
@@ -60,7 +60,7 @@ resource "null_resource" "cluster" {
     # Bootstrap script called with private_ip of each node in the cluster
     inline = [
       "chmod +x /home/${var.user}/bootstrap-cluster.sh",
-      "/home/${var.user}/bootstrap-cluster.sh -n ${join(",", hsdp_container_host.zookeeper.*.private_ip)} -c ${random_id.id.hex} -d ${var.image} -i ${count.index + 1} -t ${trust_store.password} -k ${key_stores[count.index].password}"
+      "/home/${var.user}/bootstrap-cluster.sh -n ${join(",", hsdp_container_host.zookeeper.*.private_ip)} -c ${random_id.id.hex} -d ${var.image} -i ${count.index + 1} -t ${var.trust_store.password} -k ${var.key_store.password}"
     ]
   }
 }

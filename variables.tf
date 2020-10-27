@@ -46,15 +46,15 @@ variable "private_key" {
 variable "trust_store" {
   description = "Trust store for SSL"
   type        = object (
-    { keystore  = string ,
-      password  = string }
+    { truststore  = string ,
+      password    = string }
   )
 }
 
-variable "key_stores" {
-  description = "A list of key stores one for each nore"
-  type        = list(object(
+variable "key_store" {
+  description = "Key Store for SSL, same key used for all nodes"
+  type        = object(
     { keystore  = string ,
       password  = string }
-  ) )
+  ) 
 }

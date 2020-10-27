@@ -64,15 +64,15 @@ start_zookeeper() {
     --env ZOO_PROMETHEUS_METRICS_PORT_NUMBER=10001 \
     --env ALLOW_ANONYMOUS_LOGIN=yes \
     --env ZOO_SERVERS="$servers"  \
+    --env ZOO_TLS_CLIENT_ENABLE=true \
     --env ZOO_TLS_CLIENT_KEYSTORE_FILE="/opt/bitnami/kafka/conf/certs/zookeeper.keystore.jks" \
     --env ZOO_TLS_CLIENT_KEYSTORE_PASSWORD="$client_ks_pwd" \
     --env ZOO_TLS_CLIENT_TRUSTSTORE_FILE="/opt/bitnami/kafka/conf/certs/zookeeper.truststore.jks" \
     --env ZOO_TLS_CLIENT_TRUSTSTORE_PASSWORD="$client_ts_pwd" \    
-    -p 10000:2181 \
+    -p 10000:3181 \
     -p 10001:10001 \
     -p 6066:2888 \
     -p 7077:3888 \
-    -p 3181:3181 \
     -v 'zoocert:/opt/bitnami/kafka/conf/certs/' \
     "$image"
 }
@@ -90,6 +90,8 @@ nodes=
 cluster=
 image=
 index=
+trust_store_pass=
+key_store_pass=
 
 while [ "$1" != "" ]; do
     case $1 in
@@ -127,4 +129,5 @@ echo Bootstrapping node "$index" in cluster "$cluster" with image "$image"
 kill_zookeeper
 create_volume
 start_zookeeper "$index" "$nodes" "$image" "$key_store_pwd" "$trust_store_pwd"
+load_certificates_and_restart
 
