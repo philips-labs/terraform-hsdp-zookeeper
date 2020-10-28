@@ -15,14 +15,22 @@ module "zookeeper" {
   user         = "ronswanson"
   private_key  = file("~/.ssh/dec.key")
   user_groups  = ["ronswanson", "poc"]
+  trust_store   = {
+    truststore = "./truststore.jks"
+    password   = "somepass"
+  }
+  key_store     = {
+    keystore   = "./keystore.jks"
+    password   = "somepass"
+  }
 }
 ```
 
 __IMPORTANT SECURITY INFORMATION__
-> This module currently **does not offer or enable security features** like
-> Kerberos or mTLS between Kafka, Zookeeper or any connecting client apps.
+> This module currently **enables** only mTLS-SSL
+> between Kafka, Zookeeper or any connecting client apps.
 > Operating and maintaining applications on Container Host is always
-> your responsibility. This includes ensuring above mentioned security 
+> your responsibility. This includes ensuring any security 
 > measures are in place in case you need them.
 
 
@@ -52,6 +60,22 @@ __IMPORTANT SECURITY INFORMATION__
 | user | LDAP user to use for connections | `string` | n/a | yes |
 | user\_groups | User groups to assign to cluster | `list(string)` | `[]` | no |
 | volume\_size | The volume size to use in GB | `number` | `20` | no |
+| trust\_store| the trust store object (see below for more details) | `object` | none | yes |
+| key\_store | the key store object (see below for more details) | `object` | none | yes |
+
+## Key Store object
+This object has two properties that needs to be filled
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| keystore | The path of the keystore file in JKS format| `string` | none | yes |
+| password | The password to be used for the key store | `string` | none | yes |
+
+## trust Store object
+This object has two properties that needs to be filled
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| truststore | The path of the truststore file in JKS format| `string` | none | yes |
+| password | The password to be used for the trust store | `string` | none | yes |
 
 ## Outputs
 
