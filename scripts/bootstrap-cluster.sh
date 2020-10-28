@@ -7,6 +7,8 @@ usage: bootstrap-cluster.sh
       -c cluster
       -i index
       -d docker
+      -k key-store-pwd
+      -t trust-store-pwd
 EOF
 }
 
@@ -40,9 +42,17 @@ zoo_servers() {
   echo "$servers"
 }
 
+create_volume() {
+  docker volume rm zoocert
+  docker volume create zoocert
+}
+
 start_zookeeper() {
   local index="$1"
   local nodes="$2"
+  local image:"$3"
+  local client_ks_pwd="$4"
+  local client_ts_pwd="$5"
 
   servers="$(zoo_servers "$index" "$nodes")"
   echo ZOO_SERVERS="$servers"
@@ -54,11 +64,24 @@ start_zookeeper() {
     --env ZOO_PROMETHEUS_METRICS_PORT_NUMBER=10001 \
     --env ALLOW_ANONYMOUS_LOGIN=yes \
     --env ZOO_SERVERS="$servers"  \
-    -p 10000:2181 \
+    --env ZOO_TLS_CLIENT_ENABLE=true \
+    --env ZOO_TLS_CLIENT_KEYSTORE_FILE="/opt/bitnami/kafka/conf/certs/zookeeper.keystore.jks" \
+    --env ZOO_TLS_CLIENT_KEYSTORE_PASSWORD="$client_ks_pwd" \
+    --env ZOO_TLS_CLIENT_TRUSTSTORE_FILE="/opt/bitnami/kafka/conf/certs/zookeeper.truststore.jks" \
+    --env ZOO_TLS_CLIENT_TRUSTSTORE_PASSWORD="$client_ts_pwd" \
+    -p 10000:3181 \
     -p 10001:10001 \
     -p 6066:2888 \
     -p 7077:3888 \
-    "$3"
+    -v 'zoocert:/opt/bitnami/kafka/conf/certs/' \
+    "$image"
+}
+
+load_certificates_and_restart(){
+  docker cp ./zookeeper.truststore.jks zookeeper:/opt/bitnami/kafka/conf/certs/
+  docker cp ./zookeeper.keystore.jks zookeeper:/opt/bitnami/kafka/conf/certs/
+  docker exec zookeeper ls -laR /opt/bitnami/kafka/conf/certs/
+  docker restart zookeeper -t 10
 }
 
 ##### Main
@@ -67,26 +90,34 @@ nodes=
 cluster=
 image=
 index=
+trust_store_pwd=
+key_store_pwd=
 
 while [ "$1" != "" ]; do
     case $1 in
-        -n | --nodes )          shift
-                                nodes=$1
-                                ;;
-        -c | --cluster )        shift
-                                cluster=$1
-                                ;;
-        -d | --docker )        shift
-                                image=$1
-                                ;;
-        -i | --index )        shift
-                                index=$1
-                                ;;
-        -h | --help )           usage
-                                exit
-                                ;;
-        * )                     usage
-                                exit 1
+        -n | --nodes )                shift
+                                      nodes=$1
+                                      ;;
+        -c | --cluster )              shift
+                                      cluster=$1
+                                      ;;
+        -d | --docker )               shift
+                                      image=$1
+                                      ;;
+        -i | --index )                shift
+                                      index=$1
+                                      ;;
+        -t | --trust-store-pwd )      shift
+                                      trust_store_pwd=$1
+                                      ;;
+        -k | --key-store-pwd )        shift
+                                      key_store_pwd=$1
+                                      ;;
+        -h | --help )                 usage
+                                      exit
+                                      ;;
+        * )                           usage
+                                      exit 1
     esac
     shift
 done
@@ -94,5 +125,7 @@ done
 echo Bootstrapping node "$index" in cluster "$cluster" with image "$image"
 
 kill_zookeeper
-start_zookeeper "$index" "$nodes" "$image"
+create_volume
+start_zookeeper "$index" "$nodes" "$image" "$key_store_pwd" "$trust_store_pwd"
+load_certificates_and_restart
 

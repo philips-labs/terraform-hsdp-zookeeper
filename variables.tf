@@ -42,3 +42,19 @@ variable "private_key" {
   description = "Private key for SSH access"
   type        = string
 }
+
+variable "trust_store" {
+  description = "Trust store for SSL"
+  type        = object (
+    { truststore  = string ,
+      password    = string }
+  )
+}
+
+variable "key_store" {
+  description = "Key Store for SSL, same key used for all nodes"
+  type        = object(
+    { keystore  = string ,
+      password  = string }
+  ) 
+}
