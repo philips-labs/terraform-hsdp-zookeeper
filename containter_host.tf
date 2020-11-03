@@ -12,6 +12,13 @@ resource "hsdp_container_host" "zookeeper" {
   user_groups     = var.user_groups
   security_groups = ["analytics"]
 
+  lifecycle {
+    ignore_changes = [
+      volumes,
+      volume_size
+    ]
+  }
+
   connection {
     bastion_host = var.bastion_host
     host         = self.private_ip
@@ -47,7 +54,7 @@ resource "null_resource" "cluster" {
     destination = "/home/${var.user}/bootstrap-cluster.sh"
   }
   provisioner "file" {
-    source      =  var.trust_store.truststore
+    source      = var.trust_store.truststore
     destination = "/home/${var.user}/zookeeper.truststore.jks"
   }
 
