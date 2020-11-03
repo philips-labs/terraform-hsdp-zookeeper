@@ -15,7 +15,9 @@ resource "hsdp_container_host" "zookeeper" {
   lifecycle {
     ignore_changes = [
       volumes,
-      volume_size
+      volume_size,
+      instance_type,
+      iops
     ]
   }
 
