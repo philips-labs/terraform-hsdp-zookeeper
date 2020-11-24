@@ -9,6 +9,7 @@ usage: bootstrap-cluster.sh
       -d docker
       -k key-store-pwd
       -t trust-store-pwd
+      -v jmx_exporter_version
 EOF
 }
 
@@ -60,8 +61,6 @@ start_zookeeper() {
     --restart always \
     --name zookeeper \
     --env ZOO_SERVER_ID="$1" \
-    --env ZOO_ENABLE_PROMETHEUS_METRICS=yes \
-    --env ZOO_PROMETHEUS_METRICS_PORT_NUMBER=10001 \
     --env ALLOW_ANONYMOUS_LOGIN=yes \
     --env ZOO_SERVERS="$servers"  \
     --env ZOO_TLS_CLIENT_ENABLE=true \
@@ -69,8 +68,12 @@ start_zookeeper() {
     --env ZOO_TLS_CLIENT_KEYSTORE_PASSWORD="$client_ks_pwd" \
     --env ZOO_TLS_CLIENT_TRUSTSTORE_FILE="/opt/bitnami/kafka/conf/certs/zookeeper.truststore.jks" \
     --env ZOO_TLS_CLIENT_TRUSTSTORE_PASSWORD="$client_ts_pwd" \
+    --env ZOO_TLS_CLIENT_TRUSTSTORE_PASSWORD="$client_ts_pwd" \
+    --env JVMFLAGS='-javaagent:/bitnami/prometheus/jmx_export_agent.jar=10001:/bitnami/prometheus/config.yml' \
+    --env JMXPORT=5555 \
+    -v $(pwd):/bitnami/prometheus \
     -p 10000:3181 \
-    -p 9103:10001 \
+    -p 10001:10001 \
     -p 6066:2888 \
     -p 7077:3888 \
     -v 'zoocert:/opt/bitnami/kafka/conf/certs/' \
@@ -84,6 +87,12 @@ load_certificates_and_restart(){
   docker restart zookeeper -t 10
 }
 
+download_jmx_agent(){
+  local version="$1"
+  echo "Download JMX Prometheus JavaAgent ${version}"
+  curl -s -o jmx_export_agent.jar "https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/${version}/jmx_prometheus_javaagent-${version}.jar"
+}
+
 ##### Main
 
 nodes=
@@ -92,6 +101,7 @@ image=
 index=
 trust_store_pwd=
 key_store_pwd=
+jmx_exporter_version=
 
 while [ "$1" != "" ]; do
     case $1 in
@@ -113,6 +123,9 @@ while [ "$1" != "" ]; do
         -k | --key-store-pwd )        shift
                                       key_store_pwd=$1
                                       ;;
+        -v | --jmx-exporter-version ) shift
+                                      jmx_exporter_version=$1
+                                      ;;
         -h | --help )                 usage
                                       exit
                                       ;;
@@ -126,6 +139,7 @@ echo Bootstrapping node "$index" in cluster "$cluster" with image "$image"
 
 kill_zookeeper
 create_volume
+download_jmx_agent "$jmx_exporter_version"
 start_zookeeper "$index" "$nodes" "$image" "$key_store_pwd" "$trust_store_pwd"
 load_certificates_and_restart
 

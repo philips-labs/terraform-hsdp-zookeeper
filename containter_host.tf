@@ -36,34 +36,34 @@ resource "hsdp_container_host" "zookeeper" {
   }
 }
 
-resource "null_resource" "container_exporter" {
-  count = var.prometheus_metrics ? var.nodes : 0
-
-  triggers = {
-    cluster_instance_ids = join(",", hsdp_container_host.zookeeper.*.id)
-  }
-
-  connection {
-    bastion_host = var.bastion_host
-    host         = element(hsdp_container_host.zookeeper.*.private_ip, count.index)
-    user         = var.user
-    private_key  = var.private_key
-    script_path  = "/home/${var.user}/cluster.bash"
-  }
-
-  provisioner "file" {
-    source      = "${path.module}/scripts/container_exporter.sh"
-    destination = "/home/${var.user}/container_exporter.sh"
-  }
-
-  provisioner "remote-exec" {
-    # Deploy container exporter for nodes
-    inline = [
-      "chmod +x /home/${var.user}/container_exporter.sh",
-      "/home/${var.user}/container_exporter.sh"
-    ]
-  }
-}
+//resource "null_resource" "container_exporter" {
+//  count = var.prometheus_metrics ? var.nodes : 0
+//
+//  triggers = {
+//    cluster_instance_ids = join(",", hsdp_container_host.zookeeper.*.id)
+//  }
+//
+//  connection {
+//    bastion_host = var.bastion_host
+//    host         = element(hsdp_container_host.zookeeper.*.private_ip, count.index)
+//    user         = var.user
+//    private_key  = var.private_key
+//    script_path  = "/home/${var.user}/cluster.bash"
+//  }
+//
+//  provisioner "file" {
+//    source      = "${path.module}/scripts/container_exporter.sh"
+//    destination = "/home/${var.user}/container_exporter.sh"
+//  }
+//
+//  provisioner "remote-exec" {
+//    # Deploy container exporter for nodes
+//    inline = [
+//      "chmod +x /home/${var.user}/container_exporter.sh",
+//      "/home/${var.user}/container_exporter.sh"
+//    ]
+//  }
+//}
 
 resource "null_resource" "cluster" {
   count = var.nodes
@@ -98,7 +98,7 @@ resource "null_resource" "cluster" {
     # Bootstrap script called with private_ip of each node in the cluster
     inline = [
       "chmod +x /home/${var.user}/bootstrap-cluster.sh",
-      "/home/${var.user}/bootstrap-cluster.sh -n ${join(",", hsdp_container_host.zookeeper.*.private_ip)} -c ${random_id.id.hex} -d ${var.image} -i ${count.index + 1} -t ${var.trust_store.password} -k ${var.key_store.password}"
+      "/home/${var.user}/bootstrap-cluster.sh -v ${var.jmx_exporter_version} -n ${join(",", hsdp_container_host.zookeeper.*.private_ip)} -c ${random_id.id.hex} -d ${var.image} -i ${count.index + 1} -t ${var.trust_store.password} -k ${var.key_store.password}"
     ]
   }
 }
