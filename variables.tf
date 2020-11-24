@@ -58,9 +58,3 @@ variable "key_store" {
     password = string }
   )
 }
-
-variable "jmx_exporter_version" {
-  description = "Deploy jmx exporters for Prometheus as javaagent"
-  type        = string
-  default     = "0.14.0"
-}

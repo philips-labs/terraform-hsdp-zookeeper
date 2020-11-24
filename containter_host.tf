@@ -94,16 +94,11 @@ resource "null_resource" "cluster" {
     destination = "/home/${var.user}/zookeeper.keystore.jks"
   }
 
-  provisioner "file" {
-    source      = "${path.module}/scripts/config.yml"
-    destination = "/home/${var.user}/config.yml"
-  }
-
   provisioner "remote-exec" {
     # Bootstrap script called with private_ip of each node in the cluster
     inline = [
       "chmod +x /home/${var.user}/bootstrap-cluster.sh",
-      "/home/${var.user}/bootstrap-cluster.sh -v ${var.jmx_exporter_version} -n ${join(",", hsdp_container_host.zookeeper.*.private_ip)} -c ${random_id.id.hex} -d ${var.image} -i ${count.index + 1} -t ${var.trust_store.password} -k ${var.key_store.password}"
+      "/home/${var.user}/bootstrap-cluster.sh -n ${join(",", hsdp_container_host.zookeeper.*.private_ip)} -c ${random_id.id.hex} -d ${var.image} -i ${count.index + 1} -t ${var.trust_store.password} -k ${var.key_store.password}"
     ]
   }
 }
