@@ -94,6 +94,11 @@ resource "null_resource" "cluster" {
     destination = "/home/${var.user}/zookeeper.keystore.jks"
   }
 
+  provisioner "file" {
+    source      = "${path.module}/scripts/config.yml"
+    destination = "/home/${var.user}/config.yml"
+  }
+
   provisioner "remote-exec" {
     # Bootstrap script called with private_ip of each node in the cluster
     inline = [

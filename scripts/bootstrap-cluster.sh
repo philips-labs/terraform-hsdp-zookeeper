@@ -69,9 +69,9 @@ start_zookeeper() {
     --env ZOO_TLS_CLIENT_TRUSTSTORE_FILE="/opt/bitnami/kafka/conf/certs/zookeeper.truststore.jks" \
     --env ZOO_TLS_CLIENT_TRUSTSTORE_PASSWORD="$client_ts_pwd" \
     --env ZOO_TLS_CLIENT_TRUSTSTORE_PASSWORD="$client_ts_pwd" \
-    --env JVMFLAGS='-javaagent:/bitnami/prometheus/jmx_export_agent.jar=10001:/bitnami/prometheus/config.yml' \
+    --env JVMFLAGS='-javaagent:/opt/bitnami/prometheus/jmx_export_agent.jar=10001:/opt/bitnami/prometheus/config.yml' \
     --env JMXPORT=5555 \
-    -v $(pwd):/bitnami/prometheus \
+    -v jmx_exporter:/opt/bitnami/prometheus \
     -p 10000:3181 \
     -p 10001:10001 \
     -p 6066:2888 \
@@ -90,7 +90,13 @@ load_certificates_and_restart(){
 download_jmx_agent(){
   local version="$1"
   echo "Download JMX Prometheus JavaAgent ${version}"
+  mkdir -p jmx
+  mv config.yml ./jmx
+  cd jmx
   curl -s -o jmx_export_agent.jar "https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/${version}/jmx_prometheus_javaagent-${version}.jar"
+  docker volume create rm jmx_exporter
+  docker volume create --driver local --name jmx_exporter --opt type=none --opt device=`pwd` --opt o=uid=root,gid=root --opt o=bind
+  cd ..
 }
 
 ##### Main
