@@ -70,7 +70,6 @@ start_zookeeper() {
     --env ZOO_TLS_CLIENT_TRUSTSTORE_PASSWORD="$client_ts_pwd" \
     --env JMXPORT=5555 \
     -p 10000:3181 \
-    -p 10001:10001 \
     -p 6066:2888 \
     -p 7077:3888 \
     -v 'zoocert:/opt/bitnami/kafka/conf/certs/' \

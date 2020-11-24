@@ -36,35 +36,6 @@ resource "hsdp_container_host" "zookeeper" {
   }
 }
 
-//resource "null_resource" "container_exporter" {
-//  count = var.prometheus_metrics ? var.nodes : 0
-//
-//  triggers = {
-//    cluster_instance_ids = join(",", hsdp_container_host.zookeeper.*.id)
-//  }
-//
-//  connection {
-//    bastion_host = var.bastion_host
-//    host         = element(hsdp_container_host.zookeeper.*.private_ip, count.index)
-//    user         = var.user
-//    private_key  = var.private_key
-//    script_path  = "/home/${var.user}/cluster.bash"
-//  }
-//
-//  provisioner "file" {
-//    source      = "${path.module}/scripts/container_exporter.sh"
-//    destination = "/home/${var.user}/container_exporter.sh"
-//  }
-//
-//  provisioner "remote-exec" {
-//    # Deploy container exporter for nodes
-//    inline = [
-//      "chmod +x /home/${var.user}/container_exporter.sh",
-//      "/home/${var.user}/container_exporter.sh"
-//    ]
-//  }
-//}
-
 resource "null_resource" "cluster" {
   count = var.nodes
 
