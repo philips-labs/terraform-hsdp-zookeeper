@@ -60,8 +60,6 @@ start_zookeeper() {
     --restart always \
     --name zookeeper \
     --env ZOO_SERVER_ID="$1" \
-    --env ZOO_ENABLE_PROMETHEUS_METRICS=yes \
-    --env ZOO_PROMETHEUS_METRICS_PORT_NUMBER=10001 \
     --env ALLOW_ANONYMOUS_LOGIN=yes \
     --env ZOO_SERVERS="$servers"  \
     --env ZOO_TLS_CLIENT_ENABLE=true \
@@ -69,8 +67,8 @@ start_zookeeper() {
     --env ZOO_TLS_CLIENT_KEYSTORE_PASSWORD="$client_ks_pwd" \
     --env ZOO_TLS_CLIENT_TRUSTSTORE_FILE="/opt/bitnami/kafka/conf/certs/zookeeper.truststore.jks" \
     --env ZOO_TLS_CLIENT_TRUSTSTORE_PASSWORD="$client_ts_pwd" \
+    --env JMXPORT=5555 \
     -p 10000:3181 \
-    -p 10001:10001 \
     -p 6066:2888 \
     -p 7077:3888 \
     -v 'zoocert:/opt/bitnami/kafka/conf/certs/' \
@@ -92,6 +90,7 @@ image=
 index=
 trust_store_pwd=
 key_store_pwd=
+jmx_exporter_version=
 
 while [ "$1" != "" ]; do
     case $1 in
