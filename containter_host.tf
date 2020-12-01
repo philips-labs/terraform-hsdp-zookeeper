@@ -4,7 +4,7 @@ resource "random_id" "id" {
 
 resource "hsdp_container_host" "zookeeper" {
   count         = var.nodes
-  name          = "zookeeper-${random_id.id.hex}-${count.index}.dev"
+  name          = var.host_name == "" ? "zookeeper-${random_id.id.hex}-${count.index}.dev" : "zookeeper-${var.host_name}-${count.index}"
   volumes       = 1
   volume_size   = var.volume_size
   instance_type = var.instance_type
