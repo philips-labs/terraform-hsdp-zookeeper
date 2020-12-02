@@ -41,7 +41,7 @@ resource "null_resource" "cluster" {
 
   triggers = {
     cluster_instance_ids = join(",", hsdp_container_host.zookeeper.*.id)
-    bash = file("${path.module}/scripts/bootstrap-cluster.sh")
+    bash                 = file("${path.module}/scripts/bootstrap-cluster.sh")
   }
 
   connection {
