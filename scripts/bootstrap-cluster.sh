@@ -50,7 +50,7 @@ create_volume() {
 start_zookeeper() {
   local index="$1"
   local nodes="$2"
-  local image:"$3"
+  local image="$3"
   local client_ks_pwd="$4"
   local client_ts_pwd="$5"
 
