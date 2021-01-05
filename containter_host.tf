@@ -56,6 +56,12 @@ resource "null_resource" "cluster" {
     source      = "${path.module}/scripts/bootstrap-cluster.sh"
     destination = "/home/${var.user}/bootstrap-cluster.sh"
   }
+  
+  provisioner "file" {
+    source      = "${path.module}/scripts/jmxconfig.yml"
+    destination = "/home/${var.user}/jmxconfig.yml"
+  }
+
   provisioner "file" {
     source      = var.trust_store.truststore
     destination = "/home/${var.user}/zookeeper.truststore.jks"
