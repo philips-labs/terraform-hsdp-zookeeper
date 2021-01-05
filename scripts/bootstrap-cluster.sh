@@ -82,27 +82,6 @@ load_certificates_and_restart(){
   docker restart zookeeper -t 10
 }
 
-start_jmx_exporter(){
-  # create dir to contain jmx config file
-  mkdir -p jmx
-
-  # remove any left-over volume(s)
-  docker rm -fv jmx_exporter
-  docker volume rm jmx_config_volume
-
-  # rename and move the jmx config file
-  cp ./jmxconfig.yml ./jmx/config.yml
-  
-  # create jmx volume mapping the jmx config file
-  docker volume create --driver local --name jmx_config_volume --opt type=none --opt device=`pwd`/jmx --opt o=uid=root,gid=root --opt o=bind
-
-  # start jmx exporter
-  docker run -d -p 10001:5556 \
-  --name jmx_exporter --link zookeeper \
-  -v jmx_config_volume:/opt/bitnami/jmx-exporter/example_configs \
-  bitnami/jmx-exporter:latest 5556 example_configs/config.yml
-}
-
 ##### Main
 
 nodes=
@@ -148,4 +127,3 @@ kill_zookeeper
 create_volume
 start_zookeeper "$index" "$nodes" "$image" "$key_store_pwd" "$trust_store_pwd"
 load_certificates_and_restart
-#start_jmx_exporter

@@ -56,11 +56,6 @@ resource "null_resource" "cluster" {
     source      = "${path.module}/scripts/bootstrap-cluster.sh"
     destination = "/home/${var.user}/bootstrap-cluster.sh"
   }
-  
-  provisioner "file" {
-    source      = "${path.module}/scripts/jmxconfig.yml"
-    destination = "/home/${var.user}/jmxconfig.yml"
-  }
 
   provisioner "file" {
     source      = var.trust_store.truststore
@@ -76,7 +71,6 @@ resource "null_resource" "cluster" {
     # Bootstrap script called with private_ip of each node in the cluster
     inline = [
       "chmod +x /home/${var.user}/bootstrap-cluster.sh",
-      "chmod 777 /home/${var.user}/jmxconfig.yml",
       "/home/${var.user}/bootstrap-cluster.sh -n ${join(",", hsdp_container_host.zookeeper.*.private_ip)} -c ${random_id.id.hex} -d ${var.image} -i ${count.index + 1} -t ${var.trust_store.password} -k ${var.key_store.password}"
     ]
   }
