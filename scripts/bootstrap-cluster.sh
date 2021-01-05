@@ -148,4 +148,4 @@ kill_zookeeper
 create_volume
 start_zookeeper "$index" "$nodes" "$image" "$key_store_pwd" "$trust_store_pwd"
 load_certificates_and_restart
-start_jmx_exporter
+#start_jmx_exporter
