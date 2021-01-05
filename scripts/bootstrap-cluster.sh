@@ -98,7 +98,7 @@ start_jmx_exporter(){
 
   # start jmx exporter
   docker run -d -p 10001:5556 \
-  --name jmx_exporter --link kafka \
+  --name jmx_exporter --link zookeeper \
   -v jmx_config_volume:/opt/bitnami/jmx-exporter/example_configs \
   bitnami/jmx-exporter:latest 5556 example_configs/config.yml
 }
