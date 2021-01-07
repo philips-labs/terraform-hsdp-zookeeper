@@ -67,7 +67,7 @@ start_zookeeper() {
 
   servers="$(zoo_servers "$index" "$nodes")"
   echo ZOO_SERVERS="$servers"
-  docker run -d -v $zookeeper_name:/bitnami/zookeeper \
+  docker run -d \
     --restart always \
     --name $zookeeper_name \
     --network $zookeeper_network \
@@ -83,6 +83,7 @@ start_zookeeper() {
     -p 10000:3181 \
     -p 6066:2888 \
     -p 7077:3888 \
+    -v $zookeeper_name:/bitnami/zookeeper \
     -v 'zoocert:/opt/bitnami/kafka/conf/certs/' \
     "$image"
 }
