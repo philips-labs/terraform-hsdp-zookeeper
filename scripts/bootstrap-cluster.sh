@@ -103,7 +103,7 @@ start_jmx_exporter(){
   docker volume rm jmx_config_volume
 
   # Substitute container name in jmx config and move it
-  export container_name=$kafka_broker_name
+  export container_name=$zookeeper_name
   envsubst < jmxconfig.yml.tmpl > ./jmx/config.yml
   
   # create jmx volume mapping the jmx config file
