@@ -70,7 +70,7 @@ start_zookeeper() {
   docker run -d -v $zookeeper_name:/bitnami/zookeeper \
     --restart always \
     --name $zookeeper_name \
-    --network $kafka_network \
+    --network $zookeeper_network \
     --env ZOO_SERVER_ID="$1" \
     --env ALLOW_ANONYMOUS_LOGIN=yes \
     --env ZOO_SERVERS="$servers"  \
@@ -112,7 +112,7 @@ start_jmx_exporter(){
   # start jmx exporter
   docker run -d -p 10001:5556 \
   --name jmx_exporter \
-  --network $kafka_network \
+  --network $zookeeper_network \
   -v jmx_config_volume:/opt/bitnami/jmx-exporter/example_configs \
   bitnami/jmx-exporter:latest 5556 example_configs/config.yml
 }
