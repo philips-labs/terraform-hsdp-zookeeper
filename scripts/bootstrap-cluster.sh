@@ -13,8 +13,14 @@ EOF
 }
 
 kill_zookeeper() {
-  docker kill zookeeper
-  docker rm zookeeper
+  docker kill $zookeeper_name
+  docker rm $zookeeper_name
+}
+
+kill_monitoring() {
+  echo Killing monitoring tools...
+  docker kill jmx_exporter 2&>1
+  docker rm -f jmx_exporter 2&>1
 }
 
 zoo_servers() {
@@ -42,6 +48,11 @@ zoo_servers() {
   echo "$servers"
 }
 
+create_network() {
+  docker network rm $zookeeper_network 2&>1
+  docker network create $zookeeper_network
+}
+
 create_volume() {
   docker volume rm zoocert
   docker volume create zoocert
@@ -56,9 +67,10 @@ start_zookeeper() {
 
   servers="$(zoo_servers "$index" "$nodes")"
   echo ZOO_SERVERS="$servers"
-  docker run -d -v zookeeper:/bitnami/zookeeper \
+  docker run -d -v $zookeeper_name:/bitnami/zookeeper \
     --restart always \
-    --name zookeeper \
+    --name $zookeeper_name \
+    --network $kafka_network \
     --env ZOO_SERVER_ID="$1" \
     --env ALLOW_ANONYMOUS_LOGIN=yes \
     --env ZOO_SERVERS="$servers"  \
@@ -76,10 +88,10 @@ start_zookeeper() {
 }
 
 load_certificates_and_restart(){
-  docker cp ./zookeeper.truststore.jks zookeeper:/opt/bitnami/kafka/conf/certs/
-  docker cp ./zookeeper.keystore.jks zookeeper:/opt/bitnami/kafka/conf/certs/
-  docker exec zookeeper ls -laR /opt/bitnami/kafka/conf/certs/
-  docker restart zookeeper -t 10
+  docker cp ./zookeeper.truststore.jks $zookeeper_name:/opt/bitnami/kafka/conf/certs/
+  docker cp ./zookeeper.keystore.jks $zookeeper_name:/opt/bitnami/kafka/conf/certs/
+  docker exec $zookeeper_name ls -laR /opt/bitnami/kafka/conf/certs/
+  docker restart $zookeeper_name -t 10
 }
 
 start_jmx_exporter(){
@@ -99,6 +111,7 @@ start_jmx_exporter(){
   # start jmx exporter
   docker run -d -p 10001:5556 \
   --name jmx_exporter \
+  --network $kafka_network \
   -v jmx_config_volume:/opt/bitnami/jmx-exporter/example_configs \
   bitnami/jmx-exporter:latest 5556 example_configs/config.yml
 }
@@ -143,9 +156,13 @@ while [ "$1" != "" ]; do
 done
 
 echo Bootstrapping node "$index" in cluster "$cluster" with image "$image"
+zookeeper_name="zookeeper-${index}"
+zookeeper_network="zookeeper-${index}-network"
 
+kill_monitoring
 kill_zookeeper
 create_volume
+create_network
 start_zookeeper "$index" "$nodes" "$image" "$key_store_pwd" "$trust_store_pwd"
 load_certificates_and_restart
 start_jmx_exporter
