@@ -50,7 +50,7 @@ zoo_servers() {
 
 create_network() {
   docker network rm $zookeeper_network 2&>1
-  docker network create $zookeeper_network
+  docker network create --opt com.docker.network.bridge.host_binding_ipv4=0.0.0.0 $zookeeper_network
 }
 
 create_volume() {
