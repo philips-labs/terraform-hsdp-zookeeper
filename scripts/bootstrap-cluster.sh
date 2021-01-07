@@ -83,7 +83,7 @@ start_zookeeper() {
     -p 10000:3181 \
     -p 6066:2888 \
     -p 7077:3888 \
-    -v $zookeeper_name:/bitnami/zookeeper
+    -v $zookeeper_name:/bitnami/zookeeper \
     -v 'zoocert:/opt/bitnami/kafka/conf/certs/' \
     "$image"
 }
