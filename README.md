@@ -38,14 +38,13 @@ __IMPORTANT SECURITY INFORMATION__
 
 | Name | Version |
 |------|---------|
-| hsdp | >= 0.6.1 |
+| hsdp | >= 0.9.1 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| hsdp | >= 0.6.1 |
-| null | n/a |
+| hsdp | >= 0.9.1 |
 | random | n/a |
 
 ## Inputs
