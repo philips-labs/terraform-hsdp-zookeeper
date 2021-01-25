@@ -21,22 +21,16 @@ resource "hsdp_container_host" "zookeeper" {
     ]
   }
 
-  connection {
-    bastion_host = var.bastion_host
-    host         = self.private_ip
-    user         = var.user
-    private_key  = var.private_key
-    script_path  = "/home/${var.user}/bootstrap.bash"
-  }
+  bastion_host = var.bastion_host
+  user         = var.user
+  private_key  = var.private_key
 
-  provisioner "remote-exec" {
-    inline = [
-      "docker volume create zookeeper",
-    ]
-  }
+  commands = [
+    "docker volume create zookeeper"
+  ]
 }
 
-resource "null_resource" "cluster" {
+resource "hsdp_container_host_exec" "cluster" {
   count = var.nodes
 
   triggers = {
@@ -44,33 +38,27 @@ resource "null_resource" "cluster" {
     bash                 = file("${path.module}/scripts/bootstrap-cluster.sh")
   }
 
-  connection {
-    bastion_host = var.bastion_host
-    host         = element(hsdp_container_host.zookeeper.*.private_ip, count.index)
-    user         = var.user
-    private_key  = var.private_key
-    script_path  = "/home/${var.user}/cluster.bash"
-  }
+  bastion_host = var.bastion_host
+  host         = element(hsdp_container_host.zookeeper.*.private_ip, count.index)
+  user         = var.user
+  private_key  = var.private_key
 
-  provisioner "file" {
+  file {
     source      = "${path.module}/scripts/bootstrap-cluster.sh"
     destination = "/home/${var.user}/bootstrap-cluster.sh"
   }
-  provisioner "file" {
+  file {
     source      = var.trust_store.truststore
     destination = "/home/${var.user}/zookeeper.truststore.jks"
   }
 
-  provisioner "file" {
+  file {
     source      = var.key_store.keystore
     destination = "/home/${var.user}/zookeeper.keystore.jks"
   }
 
-  provisioner "remote-exec" {
-    # Bootstrap script called with private_ip of each node in the cluster
-    inline = [
-      "chmod +x /home/${var.user}/bootstrap-cluster.sh",
-      "/home/${var.user}/bootstrap-cluster.sh -n ${join(",", hsdp_container_host.zookeeper.*.private_ip)} -c ${random_id.id.hex} -d ${var.image} -i ${count.index + 1} -t ${var.trust_store.password} -k ${var.key_store.password}"
-    ]
-  }
+  commands = [
+    "chmod +x /home/${var.user}/bootstrap-cluster.sh",
+    "/home/${var.user}/bootstrap-cluster.sh -n ${join(",", hsdp_container_host.zookeeper.*.private_ip)} -c ${random_id.id.hex} -d ${var.image} -i ${count.index + 1} -t ${var.trust_store.password} -k ${var.key_store.password}"
+  ]
 }
