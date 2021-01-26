@@ -9,6 +9,7 @@ usage: bootstrap-cluster.sh
       -d docker
       -k key-store-pwd
       -t trust-store-pwd
+      -e enable-exporter
 EOF
 }
 
@@ -127,6 +128,7 @@ index=
 trust_store_pwd=
 key_store_pwd=
 jmx_exporter_version=
+enable_exporter=
 
 while [ "$1" != "" ]; do
     case $1 in
@@ -148,6 +150,9 @@ while [ "$1" != "" ]; do
         -k | --key-store-pwd )        shift
                                       key_store_pwd=$1
                                       ;;
+        -e | --enable-exporter )      shift
+                                      enable_exporter=$1
+                                      ;;
         -h | --help )                 usage
                                       exit
                                       ;;
@@ -167,4 +172,7 @@ create_volume
 create_network
 start_zookeeper "$index" "$nodes" "$image" "$key_store_pwd" "$trust_store_pwd"
 load_certificates_and_restart
-start_jmx_exporter
+
+if [ "$enable_exporter" == true ]; then
+  start_jmx_exporter
+fi

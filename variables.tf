@@ -5,14 +5,14 @@ variable "instance_type" {
 }
 
 variable "host_name" {
-  type = string
-  default = ""
+  type        = string
+  default     = ""
   description = "The middlename for your host default is a random number"
 }
 
 variable "tld" {
-  type = string
-  default = "dev"
+  type        = string
+  default     = "dev"
   description = "The tld for your host default is a dev"
 }
 
@@ -70,3 +70,9 @@ variable "key_store" {
     password = string }
   )
 }    
+
+variable "enable_exporter" {
+  description = "Indicates whether jmx exporter is enabled or not"
+  default     = false
+  type        = bool 
+}
