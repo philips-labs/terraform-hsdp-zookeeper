@@ -47,6 +47,12 @@ resource "hsdp_container_host_exec" "cluster" {
     source      = "${path.module}/scripts/bootstrap-cluster.sh"
     destination = "/home/${var.user}/bootstrap-cluster.sh"
   }
+  
+  file {
+    source      = "${path.module}/scripts/jmxconfig.yml.tmpl"
+    destination = "/home/${var.user}/jmxconfig.yml.tmpl"
+  }
+
   file {
     source      = var.trust_store.truststore
     destination = "/home/${var.user}/zookeeper.truststore.jks"
@@ -59,6 +65,7 @@ resource "hsdp_container_host_exec" "cluster" {
 
   commands = [
     "chmod +x /home/${var.user}/bootstrap-cluster.sh",
-    "/home/${var.user}/bootstrap-cluster.sh -n ${join(",", hsdp_container_host.zookeeper.*.private_ip)} -c ${random_id.id.hex} -d ${var.image} -i ${count.index + 1} -t ${var.trust_store.password} -k ${var.key_store.password}"
+    "chmod 755 /home/${var.user}/jmxconfig.yml.tmpl",
+    "/home/${var.user}/bootstrap-cluster.sh -n ${join(",", hsdp_container_host.zookeeper.*.private_ip)} -c ${random_id.id.hex} -d ${var.image} -i ${count.index + 1} -t ${var.trust_store.password} -k ${var.key_store.password} -e ${var.enable_exporter}"
   ]
 }

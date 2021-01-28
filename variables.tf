@@ -69,4 +69,10 @@ variable "key_store" {
     { keystore = string,
     password = string }
   )
+}    
+
+variable "enable_exporter" {
+  description = "Indicates whether jmx exporter is enabled or not"
+  default     = false
+  type        = bool 
 }
