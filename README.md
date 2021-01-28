@@ -38,13 +38,13 @@ __IMPORTANT SECURITY INFORMATION__
 
 | Name | Version |
 |------|---------|
-| hsdp | >= 0.9.1 |
+| hsdp | >= 0.9.4 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| hsdp | >= 0.9.1 |
+| hsdp | >= 0.9.4 |
 | random | n/a |
 
 ## Inputs
@@ -52,15 +52,18 @@ __IMPORTANT SECURITY INFORMATION__
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | bastion\_host | Bastion host to use for SSH connections | `string` | n/a | yes |
+| enable\_exporter | Indicates whether jmx exporter is enabled or not | `bool` | `false` | no |
+| host\_name | The middlename for your host default is a random number | `string` | `""` | no |
 | image | The docker image to use | `string` | `"bitnami/zookeeper:latest"` | no |
 | instance\_type | The instance type to use | `string` | `"t2.medium"` | no |
+| key\_store | Key Store for SSL, same key used for all nodes | <pre>object(<br>    { keystore = string,<br>    password = string }<br>  )</pre> | n/a | yes |
 | nodes | Number of nodes | `number` | `3` | no |
 | private\_key | Private key for SSH access | `string` | n/a | yes |
+| tld | The tld for your host default is a dev | `string` | `"dev"` | no |
+| trust\_store | Trust store for SSL | <pre>object(<br>    { truststore = string,<br>    password = string }<br>  )</pre> | n/a | yes |
 | user | LDAP user to use for connections | `string` | n/a | yes |
 | user\_groups | User groups to assign to cluster | `list(string)` | `[]` | no |
 | volume\_size | The volume size to use in GB | `number` | `20` | no |
-| trust\_store| the trust store object (see below for more details) | `object` | none | yes |
-| key\_store | the key store object (see below for more details) | `object` | none | yes |
 
 ## Key Store object
 This object has two properties that needs to be filled
