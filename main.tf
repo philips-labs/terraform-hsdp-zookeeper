@@ -65,7 +65,7 @@ resource "hsdp_container_host_exec" "cluster" {
 
   commands = [
     "chmod +x /home/${var.user}/bootstrap-cluster.sh",
-    "chmod 777 /home/${var.user}/jmxconfig.yml.tmpl",
+    "chmod 755 /home/${var.user}/jmxconfig.yml.tmpl",
     "/home/${var.user}/bootstrap-cluster.sh -n ${join(",", hsdp_container_host.zookeeper.*.private_ip)} -c ${random_id.id.hex} -d ${var.image} -i ${count.index + 1} -t ${var.trust_store.password} -k ${var.key_store.password} -e ${var.enable_exporter}"
   ]
 }
