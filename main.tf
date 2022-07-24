@@ -24,13 +24,9 @@ resource "hsdp_container_host" "zookeeper" {
   bastion_host = var.bastion_host
   user         = var.user
   private_key  = var.private_key
-
-  commands = [
-    "docker volume create zookeeper"
-  ]
 }
 
-resource "hsdp_container_host_exec" "cluster" {
+resource "ssh_resource" "cluster" {
   count = var.nodes
 
   triggers = {
@@ -47,7 +43,7 @@ resource "hsdp_container_host_exec" "cluster" {
     source      = "${path.module}/scripts/bootstrap-cluster.sh"
     destination = "/home/${var.user}/bootstrap-cluster.sh"
   }
-  
+
   file {
     source      = "${path.module}/scripts/jmxconfig.yml.tmpl"
     destination = "/home/${var.user}/jmxconfig.yml.tmpl"
@@ -64,6 +60,7 @@ resource "hsdp_container_host_exec" "cluster" {
   }
 
   commands = [
+    "docker volume create zookeeper || true",
     "chmod +x /home/${var.user}/bootstrap-cluster.sh",
     "chmod 755 /home/${var.user}/jmxconfig.yml.tmpl",
     "/home/${var.user}/bootstrap-cluster.sh -n ${join(",", hsdp_container_host.zookeeper.*.private_ip)} -c ${random_id.id.hex} -d ${var.image} -i ${count.index + 1} -t ${var.trust_store.password} -k ${var.key_store.password} -e ${var.enable_exporter}"
